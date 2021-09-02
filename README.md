@@ -56,8 +56,8 @@ The 3 main modules demonstrate the usage of the following AWS services:
 #### 1. Clone the repository
 
 ```bash
-git clone REPO_FROM_GITHUB
-cd REPO_FROM_GITHUB_DIR
+git clone https://github.com/aws-samples/ab-testing-at-edge.git
+cd ab-testing-at-edge
 ```
 
 #### 2. Installs the dependencies
