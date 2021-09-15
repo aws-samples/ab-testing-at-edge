@@ -84,7 +84,7 @@ We want to change dynamically the served html page to be index.html or index_b.h
 
 **Solution:**
 
-Use CloudFront Function to dynamically change the origin.
+Use CloudFront Function to dynamically change the uri.
 
 **Architecture:**
 
