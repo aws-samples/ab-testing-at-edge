@@ -76,7 +76,7 @@ cdk bootstrap
 
 **Problem:**
 
-Display randomly either the old home page either the new home page, but no more than X% of home page impressions to be my new layout.
+Display randomly either the old home page either the new home page, but no more than X% of home page impressions to be our new layout.
 
 We are using Amazon CloudFront to serve the static content hosted on S3. The existing layout is our index.html page and the new layout if our index_b.html.
 
@@ -84,7 +84,7 @@ We want to change dynamically the served html page to be index.html or index_b.h
 
 **Solution:**
 
-Use CloudFront Function(CF2) to dynamically change the origin.
+Use CloudFront Function to dynamically change the origin.
 
 **Architecture:**
 
@@ -107,8 +107,8 @@ For every new visitor I want to decide randomly the home page to display but for
 
 **Solution:**
 
-We will create another CF2 (to replace the one we created on the previous module) on viewer request that will check first if there is a cookie with a page name inside, in which case the `request.uri` will be set with that value, if not it will select randomly a home page layout.
-We will need a second CF2 that will be triggered at viewer response to create a cookie with the page name served in that cookie. This operation can be done also at origin level but we want to implement something completely transparent for the backend.
+We will create another CloudFront Function (to replace the one we created on the previous module) on viewer request that will check first if there is a cookie with a page name inside, in which case the `request.uri` will be set with that value, if not it will select randomly a home page layout.
+We will need a second CloudFront Function that will be triggered at viewer response to create a cookie with the page name served in that cookie. This operation can be done also at origin level but we want to implement something completely transparent for the backend.
 
 **Architecture:**
 

@@ -63,6 +63,7 @@ export class Module_3_3 extends cdk.Stack {
 
     table.grantReadData(lambdaEdgeViewerRequest);
 
+
     const hostingOrigin = new origins.S3Origin(hostingBucket);
 
     const myDistribution = new cloudfront.Distribution(this, 'AB testing distribution', {
