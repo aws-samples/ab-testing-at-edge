@@ -28,6 +28,8 @@
     "@aws-cdk/aws-sns-subscriptions": "1.107.0",
     "@aws-cdk/aws-sqs": "1.107.0",
     "@aws-cdk/core": "1.107.0",
-    "set-value": "^4.1.0"
+    "ansi-regex": "^6.0.1",
+    "set-value": "^4.1.0",
+    "tmpl": "^1.0.5"
   }
 }
