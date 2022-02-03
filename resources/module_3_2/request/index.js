@@ -64,7 +64,7 @@ const getCookie = (headers, cookieKey) => {
       const cookies = cookieHeader.value.split(';');
       for (let cookie of cookies) {
         const [key, val] = cookie.split('=');
-        if (key === cookieKey) {
+        if (key.trim() === cookieKey) {
           return val;
         }
       }
