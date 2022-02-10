@@ -58,6 +58,7 @@ export class Module_3_3 extends cdk.Stack {
         'us-west-2',
         'eu-west-2',
         'eu-central-1', ],
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
 

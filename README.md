@@ -10,9 +10,11 @@ We explore the use of edge computing, which is between the browser and the backe
 - With [AWS CloudFront Functions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html) in Amazon CloudFront, you can write lightweight functions in JavaScript for high-scale, latency-sensitive CDN customizations. The CloudFront Functions allows you to run lightweight JavaScript code at the [218+ CloudFront edge locations](https://aws.amazon.com/cloudfront/features/?whats-new-cloudfront.sort-by=item.additionalFields.postDateTime&whats-new-cloudfront.sort-order=desc#Global_Edge_Network) (as of August 2021).
 - [Amazon CloudFront](https://aws.amazon.com/cloudfront) delivers your content through a worldwide network of data centers called edge locations. The regional edge caches are located between your origin web server and the global edge locations that serve content directly to your viewers.
 
+A [step-by-step workshop](https://catalog.us-east-1.prod.workshops.aws/v2/workshops/e507820e-bd46-421f-b417-107cd608a3b2) is also available for this content.
+
 ## Structure
 
-The three testing scenarios presented are **Random A/B**, **Sticky Random A/B**, and **External Switch A/B** and you can deploy each the module independently.
+The three testing scenarios presented are **Random A/B**, **Sticky Random A/B**, and **External Switch A/B** and you can deploy each module independently.
 
 ## Architecture
 
@@ -191,6 +193,15 @@ The following diagram illustrates the architecture we will implement in this mod
 
 ```bash
 cdk deploy ABWorkshopModule33
+```
+
+Create configuration in DynamoDB table
+
+```bash
+aws dynamodb put-item \
+    --table-name WebsiteRedirection  \
+    --item \
+        '{"path": {"S": "/"}, "segment": {"S": "0.8"}, "version_a": {"S": "index.html"}, "version_b": {"S": "index_b.html"}}'
 ```
 
 ## Costs

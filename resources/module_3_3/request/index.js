@@ -20,7 +20,7 @@ const aws = require('aws-sdk');
 aws.config.update({ region: "us-east-1" });
 const https = require('https');
 const COOKIE_KEY = "X-Experiment";
-const TABLE_NAME = "WebsiteRedirectionM22";
+const TABLE_NAME = "WebsiteRedirection";
 const PATH = "/";
 
 const { AWS_REGION } = process.env;
