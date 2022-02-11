@@ -109,7 +109,9 @@ exports.handler = async event => {
 
     setCookie(headers, `${COOKIE_KEY}=${X_Experiment_Value}`);
 
-    if (X_Experiment_Value < myConfig.segment) {
+    var segmentValue = parseInt(parseFloat(myConfig.segment)*100)
+
+    if (X_Experiment_Value < segmentValue) {
       request.uri = '/' + myConfig.version_b;
     } else {
       request.uri = '/' + myConfig.version_a;
