@@ -16,14 +16,19 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as cloudfront from '@aws-cdk/aws-cloudfront';
-import * as origins from '@aws-cdk/aws-cloudfront-origins';
-import * as s3 from "@aws-cdk/aws-s3";
-import * as s3deployment from "@aws-cdk/aws-s3-deployment";
 
-import * as cdk from '@aws-cdk/core';
-export class Bootstrap extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+
+import {
+  Stack, App, StackProps, CfnOutput,
+  aws_s3_deployment as s3deployment,
+  aws_cloudfront_origins as origins,
+  aws_cloudfront as cloudfront,
+  aws_s3 as s3
+} from "aws-cdk-lib";
+
+
+export class Bootstrap extends Stack {
+  constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const myBucket = new s3.Bucket(this, 'cdk-myBucket-deployment');
@@ -44,12 +49,12 @@ export class Bootstrap extends cdk.Stack {
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });
 
-    new cdk.CfnOutput(this, 'CloudFrontURL', {
+    new CfnOutput(this, 'CloudFrontURL', {
       description: 'The CloudFront distribution URL',
       value: 'https://' + myDistribution.domainName,
     })
 
-    new cdk.CfnOutput(this, 'ConfigBucketName', {
+    new CfnOutput(this, 'ConfigBucketName', {
       description: 'The name of the bucket to store the configuration',
       value: configBucket.bucketName,
     })

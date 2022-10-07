@@ -16,19 +16,13 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { Duration, Construct } from "@aws-cdk/core";
 
-import cloudwatch = require("@aws-cdk/aws-cloudwatch");
 import {
-  GraphWidget,
-  Column,
-  Metric,
-  SingleValueWidget,
-  LogQueryWidget,
-  LogQueryVisualizationType,
-  MathExpression
-} from "@aws-cdk/aws-cloudwatch";
+    Duration,
+    aws_cloudwatch as cloudwatch
+  } from "aws-cdk-lib";
 
+import { Construct } from "constructs";
 
 
 export class ABDashboard extends Construct {
@@ -38,11 +32,11 @@ export class ABDashboard extends Construct {
         super(scope, id);
     }
 
-    private createLEVersionsWidget(functionName : string, region : string, title: string): LogQueryWidget {
+    private createLEVersionsWidget(functionName : string, region : string, title: string): cloudwatch.LogQueryWidget {
 
-        return new LogQueryWidget({
+        return new cloudwatch.LogQueryWidget({
             logGroupNames: ["/aws/lambda/us-east-1."+functionName],
-            view: LogQueryVisualizationType.PIE,
+            view: cloudwatch.LogQueryVisualizationType.PIE,
             title: title,
             width: 6,
             height: 6,
@@ -58,10 +52,10 @@ export class ABDashboard extends Construct {
     }
 
 
-    private createCFFVersionsWidget(functionName : string, title: string): LogQueryWidget{
-        return new LogQueryWidget({
+    private createCFFVersionsWidget(functionName : string, title: string): cloudwatch.LogQueryWidget{
+        return new cloudwatch.LogQueryWidget({
             logGroupNames: ["/aws/cloudfront/function/"+functionName],
-            view: LogQueryVisualizationType.PIE,
+            view: cloudwatch.LogQueryVisualizationType.PIE,
             title: title,
             width: 9,
             height: 8,
@@ -75,11 +69,11 @@ export class ABDashboard extends Construct {
 
     }
 
-    private createLEUsersWidget(functionName : string, region : string, title: string): LogQueryWidget {
+    private createLEUsersWidget(functionName : string, region : string, title: string): cloudwatch.LogQueryWidget {
 
-        return new LogQueryWidget({
+        return new cloudwatch.LogQueryWidget({
             logGroupNames: ["/aws/lambda/us-east-1."+functionName],
-            view: LogQueryVisualizationType.PIE,
+            view: cloudwatch.LogQueryVisualizationType.PIE,
             title: title,
             width: 6,
             height: 6,
@@ -95,11 +89,11 @@ export class ABDashboard extends Construct {
     }
 
 
-    private createCFFUsersWidget(functionName : string, title: string): LogQueryWidget {
+    private createCFFUsersWidget(functionName : string, title: string): cloudwatch.LogQueryWidget {
 
-        return new LogQueryWidget({
+        return new cloudwatch.LogQueryWidget({
             logGroupNames: ["/aws/cloudfront/function/"+functionName],
-            view: LogQueryVisualizationType.PIE,
+            view: cloudwatch.LogQueryVisualizationType.PIE,
             title: title,
             width: 9,
             height: 8,
@@ -113,13 +107,13 @@ export class ABDashboard extends Construct {
     }
 
 
-    private createLEInvocationMetric(functionName: string, region: string, title: string): Metric {
+    private createLEInvocationMetric(functionName: string, region: string, title: string): cloudwatch.Metric {
 
-        return new Metric({
+        return new cloudwatch.Metric({
             namespace: "AWS/Lambda",
             metricName: "Invocations",
             period: Duration.minutes(5),
-            dimensions: { FunctionName: "us-east-1." + functionName},
+            dimensionsMap: { FunctionName: "us-east-1." + functionName},
             label: title,
             statistic: "sum",
             region: region
@@ -127,30 +121,30 @@ export class ABDashboard extends Construct {
 
     }
 
-    private createCFFInvocationMetricAvg(functionName: string, metricName: string, title: string): Metric{
-        return new Metric({
+    private createCFFInvocationMetricAvg(functionName: string, metricName: string, title: string): cloudwatch.Metric{
+        return new cloudwatch.Metric({
             namespace: "AWS/CloudFront",
             metricName: metricName,
             period: Duration.minutes(5),
-            dimensions: { FunctionName: functionName, Region: "Global" },
+            dimensionsMap: { FunctionName: functionName, Region: "Global" },
             label: title,
             statistic: "avg"
         });
     }
 
-        private createCFFInvocationMetricSum(functionName: string, metricName: string, title: string): Metric{
-        return new Metric({
+        private createCFFInvocationMetricSum(functionName: string, metricName: string, title: string): cloudwatch.Metric{
+        return new cloudwatch.Metric({
             namespace: "AWS/CloudFront",
             metricName: metricName,
             period: Duration.minutes(5),
-            dimensions: { FunctionName: functionName, Region: "Global" },
+            dimensionsMap: { FunctionName: functionName, Region: "Global" },
             label: title,
             statistic: "sum"
         });
     }
 
-    private create1CFFInvocationWidgetGraph(functionNameVreq : string): GraphWidget {
-        return new GraphWidget({
+    private create1CFFInvocationWidgetGraph(functionNameVreq : string): cloudwatch.GraphWidget {
+        return new cloudwatch.GraphWidget({
             title: "Invocations (sum)",
             height: 12,
             width: 24,
@@ -162,8 +156,8 @@ export class ABDashboard extends Construct {
           })
     }
 
-    private create2CFFInvocationWidgetGraph(functionNameVreq : string, functionNameVresp : string): GraphWidget {
-        return new GraphWidget({
+    private create2CFFInvocationWidgetGraph(functionNameVreq : string, functionNameVresp : string): cloudwatch.GraphWidget {
+        return new cloudwatch.GraphWidget({
             title: "Invocations (sum)",
             height: 12,
             width: 24,
@@ -176,8 +170,8 @@ export class ABDashboard extends Construct {
           })
     }
 
-    private create1CFFValidationsWidgetGraph(functionName1 : string): GraphWidget {
-        return new GraphWidget({
+    private create1CFFValidationsWidgetGraph(functionName1 : string): cloudwatch.GraphWidget {
+        return new cloudwatch.GraphWidget({
             title: "Validation Errors (Avg)",
             height: 12,
             width: 24,
@@ -189,8 +183,8 @@ export class ABDashboard extends Construct {
           })
     }
 
-    private create2CFFValidationsWidgetGraph(functionNameVreq : string, functionNameVresp : string): GraphWidget {
-        return new GraphWidget({
+    private create2CFFValidationsWidgetGraph(functionNameVreq : string, functionNameVresp : string): cloudwatch.GraphWidget {
+        return new cloudwatch.GraphWidget({
             title: "Validation Errors (Avg)",
             height: 12,
             width: 24,
@@ -203,8 +197,8 @@ export class ABDashboard extends Construct {
           })
     }
 
-    private create1CFFErrorsWidgetGraph(functionNameVreq : string): GraphWidget {
-        return new GraphWidget({
+    private create1CFFErrorsWidgetGraph(functionNameVreq : string): cloudwatch.GraphWidget {
+        return new cloudwatch.GraphWidget({
             title: "Execution Errors (Avg)",
             height: 12,
             width: 24,
@@ -216,8 +210,8 @@ export class ABDashboard extends Construct {
           })
     }
 
-    private create2CFFErrorsWidgetGraph(functionNameVreq : string, functionNameVresp : string): GraphWidget {
-        return new GraphWidget({
+    private create2CFFErrorsWidgetGraph(functionNameVreq : string, functionNameVresp : string): cloudwatch.GraphWidget {
+        return new cloudwatch.GraphWidget({
             title: "Execution Errors (Avg)",
             height: 12,
             width: 24,
@@ -230,8 +224,8 @@ export class ABDashboard extends Construct {
           })
     }
 
-    private create1CFFComputeWidgetGraph(functionNameVreq : string): GraphWidget {
-        return new GraphWidget({
+    private create1CFFComputeWidgetGraph(functionNameVreq : string): cloudwatch.GraphWidget {
+        return new cloudwatch.GraphWidget({
             title: "Compute Utilization (Avg)",
             height: 12,
             width: 24,
@@ -243,8 +237,8 @@ export class ABDashboard extends Construct {
           })
     }
 
-    private create2CFFComputeWidgetGraph(functionNameVreq : string, functionNameVresp : string): GraphWidget {
-        return new GraphWidget({
+    private create2CFFComputeWidgetGraph(functionNameVreq : string, functionNameVresp : string): cloudwatch.GraphWidget {
+        return new cloudwatch.GraphWidget({
             title: "Compute Utilization (Avg)",
             stacked : true,
             height: 12,
@@ -257,8 +251,8 @@ export class ABDashboard extends Construct {
           })
     }
 
-    private create1CFFInvocationWidgetSingleValue(functionNameVreq : string): SingleValueWidget {
-        return new SingleValueWidget({
+    private create1CFFInvocationWidgetSingleValue(functionNameVreq : string): cloudwatch.SingleValueWidget {
+        return new cloudwatch.SingleValueWidget({
             title: "Invocations (Sum)",
             width: 6,
             height: 8,
@@ -271,8 +265,8 @@ export class ABDashboard extends Construct {
 
     }
 
-    private create2CFFInvocationWidgetSingleValue(functionNameVreq : string, functionNameVresp : string): SingleValueWidget {
-        return new SingleValueWidget({
+    private create2CFFInvocationWidgetSingleValue(functionNameVreq : string, functionNameVresp : string): cloudwatch.SingleValueWidget {
+        return new cloudwatch.SingleValueWidget({
             title: "Invocations (Sum)",
             width: 6,
             height: 8,
@@ -286,7 +280,7 @@ export class ABDashboard extends Construct {
 
     }
 
-    private createLEInvocationWidget(functionName : string): SingleValueWidget {
+    private createLEInvocationWidget(functionName : string): cloudwatch.SingleValueWidget {
 
         const m1 = this.createLEInvocationMetric(functionName, "us-east-1", "US-East (N. Virginia)");
         const m2 = this.createLEInvocationMetric(functionName, "us-east-2", "US-East (Ohio)");
@@ -303,13 +297,13 @@ export class ABDashboard extends Construct {
         const m13 = this.createLEInvocationMetric(functionName, "sa-east-1", "South America (Sao Paulo)");
         const m14 = this.createLEInvocationMetric(functionName, "us-east-1", "All regions (sum)");
 
-        return new SingleValueWidget({
+        return new cloudwatch.SingleValueWidget({
             title: "Lambda invocations - Viewer request",
             height: 6,
             width: 24,
             setPeriodToTimeRange: true,
             metrics: [
-                new MathExpression({
+                new cloudwatch.MathExpression({
                         expression: "m1+m2+m3+m4+m5+m6+m7+m8+m9+m10+m11+m12+m13+m14",
                         label: "All regions (sum)",
                         usingMetrics: {
@@ -355,15 +349,15 @@ export class ABDashboard extends Construct {
         dashboardName: title,
         widgets: [
             [
-            new Column(this.createLEVersionsWidget(vreqFunctionName, "us-east-1", "US-East (N. Virginia)")),
-            new Column(this.createLEVersionsWidget(vreqFunctionName, "us-east-2", "US East (Ohio)")),
-            new Column(this.createLEVersionsWidget(vreqFunctionName, "eu-west-2", "EU (London)")),
-            new Column(this.createLEVersionsWidget(vreqFunctionName, "eu-west-1", "EU (Ireland)")),
-            new Column(this.createLEUsersWidget(vreqFunctionName, "us-east-1", "US-East (N. Virginia)")),
-            new Column(this.createLEUsersWidget(vreqFunctionName, "us-east-2", "US East (Ohio)")),
-            new Column(this.createLEUsersWidget(vreqFunctionName, "eu-west-2", "EU (London)")),
-            new Column(this.createLEUsersWidget(vreqFunctionName, "eu-west-1", "EU (Ireland)")),
-            new Column(this.createLEInvocationWidget(vreqFunctionName)),
+            new cloudwatch.Column(this.createLEVersionsWidget(vreqFunctionName, "us-east-1", "US-East (N. Virginia)")),
+            new cloudwatch.Column(this.createLEVersionsWidget(vreqFunctionName, "us-east-2", "US East (Ohio)")),
+            new cloudwatch.Column(this.createLEVersionsWidget(vreqFunctionName, "eu-west-2", "EU (London)")),
+            new cloudwatch.Column(this.createLEVersionsWidget(vreqFunctionName, "eu-west-1", "EU (Ireland)")),
+            new cloudwatch.Column(this.createLEUsersWidget(vreqFunctionName, "us-east-1", "US-East (N. Virginia)")),
+            new cloudwatch.Column(this.createLEUsersWidget(vreqFunctionName, "us-east-2", "US East (Ohio)")),
+            new cloudwatch.Column(this.createLEUsersWidget(vreqFunctionName, "eu-west-2", "EU (London)")),
+            new cloudwatch.Column(this.createLEUsersWidget(vreqFunctionName, "eu-west-1", "EU (Ireland)")),
+            new cloudwatch.Column(this.createLEInvocationWidget(vreqFunctionName)),
             ]
         ]})
 
@@ -375,12 +369,12 @@ export class ABDashboard extends Construct {
         dashboardName: title,
         widgets: [
             [
-            new Column(this.createCFFVersionsWidget(vreqFunctionName, "Versions")),
-            new Column(this.create1CFFInvocationWidgetSingleValue(vreqFunctionName)),
-            new Column(this.create1CFFInvocationWidgetGraph(vreqFunctionName)),
-            new Column(this.create1CFFComputeWidgetGraph(vreqFunctionName)),
-            new Column(this.create1CFFValidationsWidgetGraph(vreqFunctionName)),
-            new Column(this.create1CFFErrorsWidgetGraph(vreqFunctionName)),
+            new cloudwatch.Column(this.createCFFVersionsWidget(vreqFunctionName, "Versions")),
+            new cloudwatch.Column(this.create1CFFInvocationWidgetSingleValue(vreqFunctionName)),
+            new cloudwatch.Column(this.create1CFFInvocationWidgetGraph(vreqFunctionName)),
+            new cloudwatch.Column(this.create1CFFComputeWidgetGraph(vreqFunctionName)),
+            new cloudwatch.Column(this.create1CFFValidationsWidgetGraph(vreqFunctionName)),
+            new cloudwatch.Column(this.create1CFFErrorsWidgetGraph(vreqFunctionName)),
 
             ]
         ]})
@@ -393,13 +387,13 @@ export class ABDashboard extends Construct {
         dashboardName: title,
         widgets: [
             [
-            new Column(this.createCFFVersionsWidget(vreqFunctionName, "Versions")),
-            new Column(this.createCFFUsersWidget(vreqFunctionName, "Users")),
-            new Column(this.create2CFFInvocationWidgetSingleValue(vreqFunctionName, vrespFunctionName)),
-            new Column(this.create2CFFInvocationWidgetGraph(vreqFunctionName, vrespFunctionName)),
-            new Column(this.create2CFFComputeWidgetGraph(vreqFunctionName, vrespFunctionName)),
-            new Column(this.create2CFFValidationsWidgetGraph(vreqFunctionName, vrespFunctionName)),
-            new Column(this.create2CFFErrorsWidgetGraph(vreqFunctionName, vrespFunctionName)),
+            new cloudwatch.Column(this.createCFFVersionsWidget(vreqFunctionName, "Versions")),
+            new cloudwatch.Column(this.createCFFUsersWidget(vreqFunctionName, "Users")),
+            new cloudwatch.Column(this.create2CFFInvocationWidgetSingleValue(vreqFunctionName, vrespFunctionName)),
+            new cloudwatch.Column(this.create2CFFInvocationWidgetGraph(vreqFunctionName, vrespFunctionName)),
+            new cloudwatch.Column(this.create2CFFComputeWidgetGraph(vreqFunctionName, vrespFunctionName)),
+            new cloudwatch.Column(this.create2CFFValidationsWidgetGraph(vreqFunctionName, vrespFunctionName)),
+            new cloudwatch.Column(this.create2CFFErrorsWidgetGraph(vreqFunctionName, vrespFunctionName)),
             ]
         ]})
 

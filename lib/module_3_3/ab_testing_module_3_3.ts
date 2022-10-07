@@ -16,19 +16,22 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import * as cloudfront from '@aws-cdk/aws-cloudfront';
-import * as origins from '@aws-cdk/aws-cloudfront-origins';
-import * as s3 from "@aws-cdk/aws-s3";
-import * as s3deployment from "@aws-cdk/aws-s3-deployment";
-import * as lambda from "@aws-cdk/aws-lambda";
-import * as cdk from "@aws-cdk/core";
-import * as dynamodb from "@aws-cdk/aws-dynamodb";
+import {
+  Stack, App, StackProps, CfnOutput, RemovalPolicy,
+  aws_s3_deployment as s3deployment,
+  aws_cloudfront_origins as origins,
+  aws_cloudfront as cloudfront,
+  aws_s3 as s3,
+  aws_lambda as lambda,
+  aws_dynamodb as dynamodb
+} from "aws-cdk-lib";
+
 import { ABDashboard } from '../ab_dashboard';
 
 
-export class Module_3_3 extends cdk.Stack {
+export class Module_3_3 extends Stack {
 
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const hostingBucket = new s3.Bucket(this, 'hosting-bucket-deployment');
@@ -58,7 +61,7 @@ export class Module_3_3 extends cdk.Stack {
         'us-west-2',
         'eu-west-2',
         'eu-central-1', ],
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
 
@@ -96,7 +99,7 @@ export class Module_3_3 extends cdk.Stack {
     const dashboard = new ABDashboard(this, "MonitoringDashboard");
     dashboard.createModule33Dashboard(lambdaEdgeViewerRequest.functionName, "", "ABTestingWorkshopModule33");
 
-    new cdk.CfnOutput(this, 'CloudFrontURL', {
+    new CfnOutput(this, 'CloudFrontURL', {
       description: 'The CloudFront distribution URL',
       value: 'https://' + myDistribution.domainName,
   })
