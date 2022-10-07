@@ -37,25 +37,12 @@ export class Module_1 extends Stack {
 
     const myConfigBucket = new s3.Bucket(this, "my-config-ab-testing-bucket");
 
-    const viewerRequestFunction = new cloudfront.Function(this, 'StatelessViewerRequest', {
-      code: cloudfront.FunctionCode.fromInline(`
-      var X_Experiment_A = 'index.html';
-      var X_Experiment_B = 'index_b.html';
-
-      function handler(event) {
-        var request = event.request;
-        if (Math.random() < 0.8) {
-           request.uri = '/' + X_Experiment_A;
-        } else {
-           request.uri = '/' + X_Experiment_B;
-        }
-        console.log('X_Experiment_V ' + (request.uri == '/index.html' ? 'A_VERSION' : 'B_VERSION'));
-
-        return request;
-      }
-
-      `),
+    const viewerRequestFunction = new cloudfront.Function(this, "StatelessViewerRequest", {
+      code: cloudfront.FunctionCode.fromFile({
+        filePath: "resources/module_1/request/index.js",
+      })
     });
+
 
     new s3deployment.BucketDeployment(this, "myDeployment", {
       sources: [s3deployment.Source.asset("./resources/website")],

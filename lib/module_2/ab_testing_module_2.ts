@@ -37,65 +37,16 @@ export class Module_2 extends Stack {
 
     new s3.Bucket(this, 'my-config-ab-testing-bucket');
 
-    const viewerRequestFunction = new cloudfront.Function(this, 'StatefulViewerRequest', {
-      code: cloudfront.FunctionCode.fromInline(`
-      var X_Experiment_A = "index.html";
-      var X_Experiment_B = "index_b.html";
-      var X_Experiment_Value = 0;
-
-      function handler(event) {
-          console.log(JSON.stringify(event));
-          var request = event.request;
-          var headers = request.headers;
-
-          // If no experiment value, generate it, and store it in a header, else read it.
-          if (!request.cookies['X-Experiment']) {
-              X_Experiment_Value = Math.floor(Math.random() * 100);
-              console.log("X_Experiment_U NEW_USER");
-          } else {
-              X_Experiment_Value = parseInt(request.cookies["X-Experiment"].value);
-              console.log("X_Experiment_U RETURNING_USER");
-
-          }
-
-          headers.createcookie = {value:(X_Experiment_Value).toString()};
-
-          if (X_Experiment_Value < 80) {
-              request.uri = '/index_b.html';
-          } else {
-              request.uri = '/index.html';
-          }
-          console.log("after="+JSON.stringify(event));
-
-          console.log("X_Experiment_V " + (request.uri == '/index.html' ? 'A_VERSION' : 'B_VERSION'));
-          return request;
-
-      };
-      `),
+    const viewerRequestFunction = new cloudfront.Function(this, "StatefulViewerRequest", {
+      code: cloudfront.FunctionCode.fromFile({
+        filePath: "resources/module_2/request/index.js",
+      })
     });
 
-    const viewerResponseFunction = new cloudfront.Function(this, 'StatefulViewerResponse', {
-      code: cloudfront.FunctionCode.fromInline(`
-      function handler(event) {
-        console.log(JSON.stringify(event));
-        var response = event.response;
-        var headers = event.request.headers;
-        var request = event.request;
-        var X_Experiment_Value = 0;
-
-        if(headers.createcookie){
-          console.log("create cookie exist");
-          X_Experiment_Value = headers["createcookie"].value;
-          response.cookies['X-Experiment'] = { "value": X_Experiment_Value};
-          console.log("setting X-Experiment=" + X_Experiment_Value);
-
-        }else {
-          console.log("cookie missing");
-        }
-
-        return response;
-    }
-      `),
+    const viewerResponseFunction = new cloudfront.Function(this, "StatefulViewerResponse", {
+      code: cloudfront.FunctionCode.fromFile({
+        filePath: "resources/module_2/response/index.js",
+      })
     });
 
     new s3deployment.BucketDeployment(this, "myDeployment", {
