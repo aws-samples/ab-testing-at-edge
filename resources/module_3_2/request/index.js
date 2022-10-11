@@ -23,7 +23,7 @@ const https = require('https');
 const TTL = 60000; // TTL of 60 seconds
 const COOKIE_KEY = "X-Experiment";
 const PATH = "/";
-const config;
+var config;
 
 async function getConfigFromCF(distributionDomainName) {
   let dataString = '';
