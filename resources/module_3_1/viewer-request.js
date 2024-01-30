@@ -16,7 +16,7 @@ async function handler(event) {
     console.log('EXPERIMENT VALUE: ' + experimentValue);
 
     // Set the correct URI for the experiment
-    request.uri = experimentValue < config.THRESHOLD ? config.URI_A : config.URI_B;
+    request.uri = experimentValue > config.THRESHOLD ? config.URI_A : config.URI_B;
     console.log('X_Experiment_V: ' + request.uri);
 
     // Set the experiment value as a header - we will use it in the viewer response function
