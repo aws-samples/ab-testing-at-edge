@@ -124,7 +124,7 @@ The following figure display the architecture we will implement in this module:
 cdk deploy ABWorkshopModule2
 ```
 
-## Module 3.1 - External switch A/B - S3
+## Module 3.1 - Dynamic A/B Testing with CloudFront KeyValueStore
 
 **Problem:**
 
@@ -132,18 +132,17 @@ I want to be able to change the percentage between initial homepage and the new 
 
 **Solution:**
 
-We will use a configuration file stored in a S3 bucket so that we can modify the content as we wish.
+We will use dynamic A/B configuration stored in the CloudFront KeyValueStore, so that we can modify the paths and experiment weights without deploying CloudFront Functions again.
 
-We will replace the two CloudFront Functions by two Lambda@Edge because CloudFront functions cannot make network calls:
+Similar to Module 2, we will use two CloudFront Functions:
 
-- one Lambda@Edge triggered at viewer-request (to look for the cookie and when not present download a configuration file from S3 to decide if initial layout or new layout should be selected)
-- one Lambda@Edge triggered at viewer-response to create a cookie with the selected page name.
+- one Function triggered at viewer-request, to look for the cookie, and when not present, retrieve configuration from KVS to decide if initial layout or new layout should be selected,
+- one Function triggered at viewer-response, to create a cookie with the selected page name.
 
-**Architecture:**
-
+<!-- Architecture diagram needs to be updated to include the KVS icon -->
+<!-- **Architecture:**
 The following diagram illustrates the architecture we will implement in this modules:
-
-![Architecture Module 3.1](resources/readme/architecture_module_3_1.png)
+![Architecture Module 3.1](resources/readme/architecture_module_3_1.png) -->
 
 **Deployment:**
 
@@ -151,13 +150,18 @@ The following diagram illustrates the architecture we will implement in this mod
 cdk deploy ABWorkshopModule31
 ```
 
-## Module 3.2 - External switch A/B - S3 and CloudFront
+## Module 3.2 - External switch A/B with S3 and CloudFront
 
 **Problem:**
 
-I want to be lower the time required to download the configuration file from S3. The bucket is located in a AWS region so if I have a user from a different region, the Lambda@Edge triggered in that region should download the file from another region which can be long.
+I want to be able to change the percentage between initial homepage and the new home page based on configuration stored in S3.
 
 **Solution:**
+
+We will replace the two CloudFront Functions by two Lambda@Edge because CloudFront functions cannot make network calls:
+
+- one Lambda@Edge triggered at viewer-request (to look for the cookie and when not present download a configuration file from S3 to decide if initial layout or new layout should be selected)
+- one Lambda@Edge triggered at viewer-response to create a cookie with the selected page name.
 
 We will use a CloudFront distribution in front of our S3 bucket to cache the configuration file for a certain amount of time.
 
@@ -173,7 +177,7 @@ The following diagram illustrates the architecture we will implement in this mod
 cdk deploy ABWorkshopModule32
 ```
 
-## Module 3.3 - External switch A/B - DynamoDB
+## Module 3.3 - External switch A/B with DynamoDB
 
 **Problem:**
 
