@@ -1,4 +1,3 @@
-
 /*
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * SPDX-License-Identifier: MIT-0
@@ -17,96 +16,67 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {
-  Stack, App, StackProps, CfnOutput,
-  aws_s3_deployment as s3deployment,
-  aws_cloudfront_origins as origins,
-  aws_cloudfront as cloudfront,
-  aws_s3 as s3,
-  aws_ssm as ssm,
-  aws_lambda as lambda
-} from "aws-cdk-lib";
-
+import { Stack, App, StackProps, CfnOutput } from "aws-cdk-lib";
+import { Distribution, Function, FunctionCode, FunctionEventType, FunctionRuntime, ImportSource, KeyValueStore, ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
+import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { Bucket } from "aws-cdk-lib/aws-s3";
+import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
+import { join } from "path";
 
 import { ABDashboard } from '../ab_dashboard';
-
+import { FunctionWithStore } from "./function-with-store";
 
 export class Module_3_1 extends Stack {
-
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const hostingBucket = new s3.Bucket(this, 'hosting-bucket-deployment');
-    const configBucket = new s3.Bucket(this, 'config-bucket-deployment');
+    const VIEWER_REQUEST_PATH = join(__dirname, '../../resources/module_3_1/viewer-request.js');
+    const VIEWER_RESPONSE_PATH = join(__dirname, '../../resources/module_3_1/viewer-response.js');
+    const CONFIG_PATH = join(__dirname, '../../resources/module_3_1/config.json');
 
-    const mySsm = new ssm.StringParameter(this, 'S3BucketNameSSMParam', {
-      parameterName: "AB-S3-ConfigBucket",
-
-      description: 'S3 bucket used to store config for AB testing workshop',
-      stringValue: configBucket.bucketName
-    });
-
-
-    new s3deployment.BucketDeployment(this, "deployment", {
-      sources: [s3deployment.Source.asset("./resources/website")],
+    const hostingBucket = new Bucket(this, 'bucket');
+    new BucketDeployment(this, "deployment", {
+      sources: [Source.asset("./resources/website")],
       destinationBucket: hostingBucket,
     });
 
-    new s3deployment.BucketDeployment(this, "config", {
-      sources: [s3deployment.Source.asset("resources/module_3_1/segmentation")],
-      destinationBucket: configBucket,
+    const viewerRequestFunctionWithStore = new FunctionWithStore(this, 'viewer-request', {
+      entryPath: VIEWER_REQUEST_PATH,
+      store: new KeyValueStore(this, 'store', {
+        source: ImportSource.fromAsset(CONFIG_PATH)
+      })
     });
 
-    const lambdaEdgeViewerRequest = new lambda.Function(this, 'LambdaEdgeViewerRequest', {
-      runtime: lambda.Runtime.NODEJS_16_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset('resources/module_3_1/request'),
-    });
+    const viewerResponseFunction = new Function(this, 'viewer-response', {
+      code: FunctionCode.fromFile({ filePath: VIEWER_RESPONSE_PATH }),
+      runtime: FunctionRuntime.JS_2_0
+    })
 
-    const lambdaEdgeViewerResponse = new lambda.Function(this, 'LambdaEdgeViewerResponse', {
-      runtime: lambda.Runtime.NODEJS_16_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset('resources/module_3_1/response'),
-    });
+    const defaultBehavior = {
+      origin: new S3Origin(hostingBucket),
+      viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS
+    };
 
-    configBucket.grantRead(lambdaEdgeViewerRequest);
-    mySsm.grantRead(lambdaEdgeViewerRequest);
-
-    const myOrigin = new origins.S3Origin(hostingBucket);
-    const myDistribution = new cloudfront.Distribution(this, 'AB testing distribution', {
-      defaultBehavior: {
-         origin: myOrigin, viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
-      },
-
+    const distribution = new Distribution(this, 'distribution', {
+      defaultBehavior,
       additionalBehaviors: {
         '/': {
-          origin: myOrigin,
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          edgeLambdas: [
-            {
-              functionVersion: lambdaEdgeViewerRequest.currentVersion,
-              eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
-            },
-            {
-              functionVersion: lambdaEdgeViewerResponse.currentVersion,
-              eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
-            },
+          ...defaultBehavior,
+          functionAssociations: [
+            { function: viewerRequestFunctionWithStore, eventType: FunctionEventType.VIEWER_REQUEST },
+            { function: viewerResponseFunction, eventType: FunctionEventType.VIEWER_RESPONSE },
           ],
         },
       },
-       comment : 'AB Testing Workshop - Module 3-1'
+      comment: 'AB Testing Workshop - Module 3-1'
     });
-
-
-    const dashboard = new ABDashboard(this, "MonitoringDashboard");
-    dashboard.createModule33Dashboard(lambdaEdgeViewerRequest.functionName, "", "ABTestingWorkshopModule31");
 
     new CfnOutput(this, 'CloudFrontURL', {
       description: 'The CloudFront distribution URL',
-      value: 'https://' + myDistribution.domainName,
-  })
+      value: 'https://' + distribution.domainName,
+    })
 
-
-
+    const dashboard = new ABDashboard(this, "MonitoringDashboard");
+    dashboard.createModule31Dashboard(viewerRequestFunctionWithStore.functionName, viewerResponseFunction.functionName, "ABTestingWorkshopModule31");
   }
 }
