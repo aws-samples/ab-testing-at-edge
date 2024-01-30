@@ -9,7 +9,7 @@ async function handler(event) {
 
     // Check if site was already visited by the user
     const returningUser = Boolean(request.cookies['X-Experiment']);
-    console.log(returningUser ? 'RETURNING USER' : 'NEW USER');
+    console.log('X_Experiment_U: ' + (returningUser ? 'RETURNING USER' : 'NEW USER'));
 
     // If already visited, parse the experiment value, else generate one
     const experimentValue = returningUser ? parseInt(request.cookies["X-Experiment"].value) : Math.floor(Math.random() * 100);
@@ -17,7 +17,7 @@ async function handler(event) {
 
     // Set the correct URI for the experiment
     request.uri = experimentValue < config.THRESHOLD ? config.URI_A : config.URI_B;
-    console.log('FINAL URI: ' + request.uri);
+    console.log('X_Experiment_V: ' + request.uri);
 
     // Set the experiment value as a header - we will use it in the viewer response function
     request.headers['x-experiment'] = { value: "" + experimentValue };
