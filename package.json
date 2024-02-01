@@ -16,12 +16,12 @@
     "@types/prettier": "2.7.3",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.5",
-    "aws-cdk": "2.118.0",
+    "aws-cdk": "2.125.0",
     "ts-node": "^10.9.2",
     "typescript": "~3.9.10"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.118.0",
+    "aws-cdk-lib": "2.125.0",
     "constructs": "^10.3.0",
     "source-map-support": "^0.5.21"
   }
