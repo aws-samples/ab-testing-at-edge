@@ -17,7 +17,7 @@ export class FunctionWithStore extends Function {
     const keyValueStore = new KeyValueStore(scope, `${id}-store`, { source: ImportSource.fromAsset(keyValueStoreImportSourcePath) });
     
     const functionCodeRaw = readFileSync(entryPath).toString();
-    const functionCodeWithKvsId = functionCodeRaw.replace('__KVS_ID__', keyValueStore.keyValueStoreId);
+    const functionCodeWithKvsId = functionCodeRaw.replace("__KVS_ID__", keyValueStore.keyValueStoreId);
     const code = FunctionCode.fromInline(functionCodeWithKvsId);
 
     super(scope, id, { code, keyValueStore });

@@ -23,28 +23,28 @@ import { Bucket } from "aws-cdk-lib/aws-s3";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import { join } from "path";
 
-import { ABDashboard } from '../ab_dashboard';
+import { ABDashboard } from "../ab_dashboard";
 import { FunctionWithStore } from "./function-with-store";
 
-const RESOURCES_PATH_PREFIX = join(__dirname, '../../resources/module_3_1');
+const RESOURCES_PATH_PREFIX = join(__dirname, "../../resources/module_3_1");
 
 export class Module_3_1 extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const hostingBucket = new Bucket(this, 'bucket');
+    const hostingBucket = new Bucket(this, "bucket");
     new BucketDeployment(this, "deployment", {
       sources: [Source.asset("./resources/website")],
       destinationBucket: hostingBucket,
     });
 
-    const viewerRequest = new FunctionWithStore(this, 'viewer-request', {
-      entryPath: RESOURCES_PATH_PREFIX + '/viewer-request-function.js',
-      keyValueStoreImportSourcePath: RESOURCES_PATH_PREFIX + '/viewer-request-store-source.json'
+    const viewerRequest = new FunctionWithStore(this, "viewer-request", {
+      entryPath: RESOURCES_PATH_PREFIX + "/viewer-request-function.js",
+      keyValueStoreImportSourcePath: RESOURCES_PATH_PREFIX + "/viewer-request-store-source.json"
     });
 
-    const viewerResponse = new Function(this, 'viewer-response', {
-      code: FunctionCode.fromFile({ filePath: RESOURCES_PATH_PREFIX + '/viewer-request-function.js' }),
+    const viewerResponse = new Function(this, "viewer-response", {
+      code: FunctionCode.fromFile({ filePath: RESOURCES_PATH_PREFIX + "/viewer-request-function.js" }),
       runtime: FunctionRuntime.JS_2_0
     })
 
@@ -53,10 +53,10 @@ export class Module_3_1 extends Stack {
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS
     };
 
-    const distribution = new Distribution(this, 'distribution', {
+    const distribution = new Distribution(this, "distribution", {
       defaultBehavior,
       additionalBehaviors: {
-        '/': {
+        "/": {
           ...defaultBehavior,
           functionAssociations: [
             { function: viewerRequest, eventType: FunctionEventType.VIEWER_REQUEST },
@@ -64,12 +64,12 @@ export class Module_3_1 extends Stack {
           ],
         },
       },
-      comment: 'AB Testing Workshop - Module 3-1'
+      comment: "AB Testing Workshop - Module 3-1"
     });
 
-    new CfnOutput(this, 'CloudFrontURL', {
-      description: 'The CloudFront distribution URL',
-      value: 'https://' + distribution.domainName,
+    new CfnOutput(this, "distribution-domain-name", {
+      description: "CloudFront Distribution URL",
+      value: "https://" + distribution.domainName,
     })
 
     const dashboard = new ABDashboard(this, "MonitoringDashboard");
