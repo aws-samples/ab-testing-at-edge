@@ -17,7 +17,7 @@
  */
 
 import { Stack, App, StackProps, CfnOutput } from "aws-cdk-lib";
-import { Distribution, Function, FunctionCode, FunctionEventType, FunctionRuntime, ImportSource, KeyValueStore, ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
+import { Distribution, Function, FunctionCode, FunctionEventType, FunctionRuntime, ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
 import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
@@ -26,13 +26,11 @@ import { join } from "path";
 import { ABDashboard } from '../ab_dashboard';
 import { FunctionWithStore } from "./function-with-store";
 
+const RESOURCES_PATH_PREFIX = join(__dirname, '../../resources/module_3_1');
+
 export class Module_3_1 extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
-
-    const VIEWER_REQUEST_PATH = join(__dirname, '../../resources/module_3_1/viewer-request.js');
-    const VIEWER_RESPONSE_PATH = join(__dirname, '../../resources/module_3_1/viewer-response.js');
-    const CONFIG_PATH = join(__dirname, '../../resources/module_3_1/config.json');
 
     const hostingBucket = new Bucket(this, 'bucket');
     new BucketDeployment(this, "deployment", {
@@ -40,15 +38,13 @@ export class Module_3_1 extends Stack {
       destinationBucket: hostingBucket,
     });
 
-    const viewerRequestFunctionWithStore = new FunctionWithStore(this, 'viewer-request', {
-      entryPath: VIEWER_REQUEST_PATH,
-      store: new KeyValueStore(this, 'store', {
-        source: ImportSource.fromAsset(CONFIG_PATH)
-      })
+    const viewerRequest = new FunctionWithStore(this, 'viewer-request', {
+      entryPath: RESOURCES_PATH_PREFIX + '/viewer-request-function.js',
+      keyValueStoreImportSourcePath: RESOURCES_PATH_PREFIX + '/viewer-request-store-source.json'
     });
 
-    const viewerResponseFunction = new Function(this, 'viewer-response', {
-      code: FunctionCode.fromFile({ filePath: VIEWER_RESPONSE_PATH }),
+    const viewerResponse = new Function(this, 'viewer-response', {
+      code: FunctionCode.fromFile({ filePath: RESOURCES_PATH_PREFIX + '/viewer-request-function.js' }),
       runtime: FunctionRuntime.JS_2_0
     })
 
@@ -63,8 +59,8 @@ export class Module_3_1 extends Stack {
         '/': {
           ...defaultBehavior,
           functionAssociations: [
-            { function: viewerRequestFunctionWithStore, eventType: FunctionEventType.VIEWER_REQUEST },
-            { function: viewerResponseFunction, eventType: FunctionEventType.VIEWER_RESPONSE },
+            { function: viewerRequest, eventType: FunctionEventType.VIEWER_REQUEST },
+            { function: viewerResponse, eventType: FunctionEventType.VIEWER_RESPONSE },
           ],
         },
       },
@@ -77,6 +73,6 @@ export class Module_3_1 extends Stack {
     })
 
     const dashboard = new ABDashboard(this, "MonitoringDashboard");
-    dashboard.createModule31Dashboard(viewerRequestFunctionWithStore.functionName, viewerResponseFunction.functionName, "ABTestingWorkshopModule31");
+    dashboard.createModule31Dashboard(viewerRequest.functionName, viewerResponse.functionName, "ABTestingWorkshopModule31");
   }
 }

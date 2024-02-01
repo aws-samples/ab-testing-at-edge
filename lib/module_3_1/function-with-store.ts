@@ -1,4 +1,4 @@
-import { CfnFunction, Function, FunctionCode, FunctionRuntime, KeyValueStore } from "aws-cdk-lib/aws-cloudfront";
+import { Function, FunctionCode, ImportSource, KeyValueStore } from "aws-cdk-lib/aws-cloudfront";
 import { Construct } from "constructs";
 import { readFileSync } from "fs";
 
@@ -7,24 +7,19 @@ export interface FunctionPropsWithStore {
   entryPath: string;
 
   /** KeyValueStore to be associated with the function */
-  store: KeyValueStore;
+  keyValueStoreImportSourcePath: string;
 }
 
 export class FunctionWithStore extends Function {
   constructor(scope: Construct, id: string, props: FunctionPropsWithStore) {
-    const functionCodeRaw = readFileSync(props.entryPath).toString();
-    const functionCodeWithKvsId = functionCodeRaw.replace('__KVS_ID__', props.store.keyValueStoreId);
+    const { entryPath, keyValueStoreImportSourcePath } = props;
 
-    const actualProps = {
-      code: FunctionCode.fromInline(functionCodeWithKvsId),
-      runtime: FunctionRuntime.JS_2_0,
-    };
+    const keyValueStore = new KeyValueStore(scope, `${id}-store`, { source: ImportSource.fromAsset(keyValueStoreImportSourcePath) });
+    
+    const functionCodeRaw = readFileSync(entryPath).toString();
+    const functionCodeWithKvsId = functionCodeRaw.replace('__KVS_ID__', keyValueStore.keyValueStoreId);
+    const code = FunctionCode.fromInline(functionCodeWithKvsId);
 
-    super(scope, id, actualProps);
-
-    (this.node.defaultChild as CfnFunction)
-      .addPropertyOverride("FunctionConfig.KeyValueStoreAssociations",
-        [{ "KeyValueStoreARN": props.store.keyValueStoreArn }]
-      )
+    super(scope, id, { code, keyValueStore });
   }
 }
