@@ -44,7 +44,7 @@ export class Module_3_1 extends Stack {
     });
 
     const viewerResponse = new Function(this, "viewer-response", {
-      code: FunctionCode.fromFile({ filePath: RESOURCES_PATH_PREFIX + "/viewer-request-function.js" }),
+      code: FunctionCode.fromFile({ filePath: RESOURCES_PATH_PREFIX + "/viewer-response-function.js" }),
       runtime: FunctionRuntime.JS_2_0
     })
 
