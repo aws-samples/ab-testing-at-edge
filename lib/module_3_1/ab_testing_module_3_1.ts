@@ -26,8 +26,6 @@ import { join } from "path";
 import { ABDashboard } from "../ab_dashboard";
 import { FunctionWithStore } from "./function-with-store";
 
-const RESOURCES_PATH_PREFIX = join(__dirname, "../../resources/module_3_1");
-
 export class Module_3_1 extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -39,12 +37,12 @@ export class Module_3_1 extends Stack {
     });
 
     const viewerRequest = new FunctionWithStore(this, "viewer-request", {
-      entryPath: RESOURCES_PATH_PREFIX + "/viewer-request-function.js",
-      keyValueStoreImportSourcePath: RESOURCES_PATH_PREFIX + "/viewer-request-store-source.json"
+      entryPath: join(__dirname, "viewer-request-function.js"),
+      keyValueStoreImportSourcePath: join(__dirname, "../../resources/config" + "/viewer-request-store-source.json")
     });
 
     const viewerResponse = new Function(this, "viewer-response", {
-      code: FunctionCode.fromFile({ filePath: RESOURCES_PATH_PREFIX + "/viewer-response-function.js" }),
+      code: FunctionCode.fromFile({ filePath: join(__dirname, "viewer-response-function.js") }),
       runtime: FunctionRuntime.JS_2_0
     })
 
