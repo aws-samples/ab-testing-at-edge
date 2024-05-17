@@ -35,7 +35,6 @@ export class Module_3_2 extends Stack {
     const hostingBucket = new s3.Bucket(this, 'hosting-bucket-deployment');
     const configBucket = new s3.Bucket(this, 'config-bucket-deployment');
 
-
     new s3deployment.BucketDeployment(this, "hosting", {
       sources: [s3deployment.Source.asset("./resources/website")],
       destinationBucket: hostingBucket,
@@ -58,20 +57,15 @@ export class Module_3_2 extends Stack {
       code: lambda.Code.fromAsset('resources/module_3_2/response'),
     });
 
-    const hostingOrigin = new origins.S3Origin(hostingBucket);
-    const configOrigin = new origins.S3Origin(configBucket);
+    configBucket.grantRead(lambdaEdgeViewerRequest);
 
+    const hostingOrigin = new origins.S3Origin(hostingBucket);
     const myDistribution = new cloudfront.Distribution(this, 'AB testing distribution', {
       defaultBehavior: {
-         origin: hostingOrigin, viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
+        origin: hostingOrigin,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
       },
-
       additionalBehaviors: {
-        'config/ab_testing_config.json': {
-          origin: configOrigin,
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-
-        },
         '/': {
           origin: hostingOrigin,
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -86,20 +80,16 @@ export class Module_3_2 extends Stack {
             },
           ],
         },
-
       },
-
-       comment : 'AB Testing Workshop - Module 3-2'
+      comment: 'AB Testing Workshop - Module 3-2'
     });
 
     const dashboard = new ABDashboard(this, "MonitoringDashboard");
-    dashboard.createModule33Dashboard(lambdaEdgeViewerRequest.functionName, "", "ABTestingWorkshopModule32");
-
+    dashboard.createModule32Dashboard(lambdaEdgeViewerRequest.functionName, "", "ABTestingWorkshopModule32");
 
     new CfnOutput(this, 'CloudFrontURL', {
       description: 'The CloudFront distribution URL',
       value: 'https://' + myDistribution.domainName,
-  })
-
+    });
   }
 }
