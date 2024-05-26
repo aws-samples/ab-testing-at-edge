@@ -139,10 +139,11 @@ Similar to Module 2, we will use two CloudFront Functions:
 - one Function triggered at viewer-request, to look for the cookie, and when not present, retrieve configuration from KVS to decide if initial layout or new layout should be selected,
 - one Function triggered at viewer-response, to create a cookie with the selected page name.
 
-<!-- Architecture diagram needs to be updated to include the KVS icon -->
-<!-- **Architecture:**
+**Architecture:**
+
 The following diagram illustrates the architecture we will implement in this modules:
-![Architecture Module 3.1](resources/readme/architecture_module_3_1.png) -->
+
+![Architecture Module 3.2](resources/readme/architecture_module_3_1.drawio.png)
 
 **Deployment:**
 
