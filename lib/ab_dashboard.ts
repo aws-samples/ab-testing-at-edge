@@ -409,7 +409,7 @@ export class ABDashboard extends Construct {
     }
 
     public createModule31Dashboard(vreqFunctionName: string, vrespFunctionName: string, title: string): cloudwatch.Dashboard {
-        return this.createLEDashboard(vreqFunctionName, vrespFunctionName, title);
+        return this.create2CFFDashboard(vreqFunctionName, vrespFunctionName, title);
     }
 
     public createModule2Dashboard(vreqFunctionName: string, vrespFunctionName: string, title: string): cloudwatch.Dashboard {

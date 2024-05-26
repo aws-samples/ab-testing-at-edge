@@ -16,8 +16,6 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-
 import {
   Stack, App, StackProps, CfnOutput,
   aws_s3_deployment as s3deployment,
@@ -26,33 +24,36 @@ import {
   aws_s3 as s3
 } from "aws-cdk-lib";
 
-
 export class Bootstrap extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const myBucket = new s3.Bucket(this, 'cdk-myBucket-deployment');
-    const configBucket = new s3.Bucket(this, 'config-bucket-deployment');
-
-    new s3deployment.BucketDeployment(this, "myDeployment", {
-      sources: [s3deployment.Source.asset("./resources/website")],
-      destinationBucket: myBucket,
+    const hostingBucket = new s3.Bucket(this, 'hosting-bucket');
+    new s3deployment.BucketDeployment(this, 'hosting-deployment', {
+      sources: [s3deployment.Source.asset('./resources/website')],
+      destinationBucket: hostingBucket,
     });
 
-    const myDistribution = new cloudfront.Distribution(this, 'myDistribution', {
-      defaultBehavior: { origin: new origins.S3Origin(myBucket), viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS},
+    const hostingDistribution = new cloudfront.Distribution(this, 'hosting-distribution', {
+      defaultBehavior: { origin: new origins.S3Origin(hostingBucket), viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS},
       defaultRootObject : 'index.html',
       comment : 'AB Testing Workshop - Bootstrap'
     });
 
-    myDistribution.addBehavior('/', new origins.S3Origin(myBucket), {
+    hostingDistribution.addBehavior('/', new origins.S3Origin(hostingBucket), {
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });
 
     new CfnOutput(this, 'CloudFrontURL', {
       description: 'The CloudFront distribution URL',
-      value: 'https://' + myDistribution.domainName,
+      value: 'https://' + hostingDistribution.domainName,
     })
+
+    const configBucket = new s3.Bucket(this, 'config-bucket');
+    new s3deployment.BucketDeployment(this, 'config-deployment', {
+      sources: [s3deployment.Source.asset('./resources/config')],
+      destinationBucket: configBucket,
+    });
 
     new CfnOutput(this, 'ConfigBucketName', {
       description: 'The name of the bucket to store the configuration',
