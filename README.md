@@ -7,7 +7,7 @@ Demonstrate how to implement an A/B testing solution for an e-commerce website.
 We explore the use of edge computing, which is between the browser and the backend, to provide processing close to where data is generated. This workshop lets you run code closer to users of your application, which improves performance and reduces latency, through the use of four services:
 
 - [AWS Lambda@Edge](https://aws.amazon.com/lambda/edge) runs your code globally at AWS locations close to your users, so you can deliver full-featured, customized content with high performance, and low latency.
-- With [AWS CloudFront Functions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html) in Amazon CloudFront, you can write lightweight functions in JavaScript for high-scale, latency-sensitive CDN customizations. The CloudFront Functions allows you to run lightweight JavaScript code at the [600+ CloudFront edge locations](https://aws.amazon.com/cloudfront/features/?whats-new-cloudfront.sort-by=item.additionalFields.postDateTime&whats-new-cloudfront.sort-order=desc#Global_Edge_Network) (as of Spring 2024).
+- With [Amazon CloudFront Functions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html) in Amazon CloudFront, you can write lightweight functions in JavaScript for high-scale, latency-sensitive CDN customizations. The CloudFront Functions allows you to run lightweight JavaScript code at the [600+ CloudFront edge locations](https://aws.amazon.com/cloudfront/features/?whats-new-cloudfront.sort-by=item.additionalFields.postDateTime&whats-new-cloudfront.sort-order=desc#Global_Edge_Network) (as of Spring 2024).
 - [CloudFront KeyValueStore](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions.html) is a secure, global, low-latency key-value datastore that allows read access from within CloudFront Functions, enabling advanced customizable logic at the CloudFront edge locations.
 - [Amazon CloudFront](https://aws.amazon.com/cloudfront) delivers your content through a worldwide network of data centers called edge locations. The regional edge caches are located between your origin web server and the global edge locations that serve content directly to your viewers.
 
@@ -210,6 +210,28 @@ aws dynamodb put-item \
     --item \
         '{"path": {"S": "/"}, "segment": {"S": "0.8"}, "version_a": {"S": "index.html"}, "version_b": {"S": "index_b.html"}}'
 ```
+
+## Test
+
+1. Make scripts executable
+
+```bash
+chmod 0700 resources/ab_testing_stateful.sh
+chmod 0700 resources/ab_testing_stateless.sh
+
+```
+2. Test using a stateful request
+
+```bash
+./resources/ab_testing_stateful.sh CLOUDFRONT_DOMAINE_NAME
+```
+
+3. Test using a stateless request
+
+```bash
+./resources/ab_testing_stateless.sh CLOUDFRONT_DOMAINE_NAME
+```
+
 
 ## Costs
 
