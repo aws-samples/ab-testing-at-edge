@@ -4,10 +4,11 @@
 
 Demonstrate how to implement an A/B testing solution for an e-commerce website.
 
-We explore the use of edge computing, which is between the browser and the backend, to provide processing close to where data is generated. This workshop lets you run code closer to users of your application, which improves performance and reduces latency, through the use of three services:
+We explore the use of edge computing, which is between the browser and the backend, to provide processing close to where data is generated. This workshop lets you run code closer to users of your application, which improves performance and reduces latency, through the use of four services:
 
 - [AWS Lambda@Edge](https://aws.amazon.com/lambda/edge) runs your code globally at AWS locations close to your users, so you can deliver full-featured, customized content with high performance, and low latency.
 - With [AWS CloudFront Functions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html) in Amazon CloudFront, you can write lightweight functions in JavaScript for high-scale, latency-sensitive CDN customizations. The CloudFront Functions allows you to run lightweight JavaScript code at the [600+ CloudFront edge locations](https://aws.amazon.com/cloudfront/features/?whats-new-cloudfront.sort-by=item.additionalFields.postDateTime&whats-new-cloudfront.sort-order=desc#Global_Edge_Network) (as of Spring 2024).
+- [CloudFront KeyValueStore](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions.html) is a secure, global, low-latency key-value datastore that allows read access from within CloudFront Functions, enabling advanced customizable logic at the CloudFront edge locations.
 - [Amazon CloudFront](https://aws.amazon.com/cloudfront) delivers your content through a worldwide network of data centers called edge locations. The regional edge caches are located between your origin web server and the global edge locations that serve content directly to your viewers.
 
 A [step-by-step workshop](https://catalog.us-east-1.prod.workshops.aws/v2/workshops/e507820e-bd46-421f-b417-107cd608a3b2) is also available for this content.
@@ -42,7 +43,8 @@ The 3 main modules demonstrate the usage of the following AWS services:
 
 - [Amazon CloudFront](https://aws.amazon.com/cloudfront): the fast and secure content delivery will be performed by a CloudFront distribution
 - [AWS Lambda@Edge](https://aws.amazon.com/lambda/edge): cookie setting and url rewriting
-- [AWS CloudFront Functions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html): cookie setting and url rewriting
+- [CloudFront Functions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html): cookie setting and url rewriting
+- [Amazon CloudFront KeyValueStore](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions.html): the dynamic data will be stored in a KVS store
 - [Amazon DynamoDB](https://aws.amazon.com/dynamodb): the dynamic data will be stored in a DynamoDB table
 - [Amazon S3](https://aws.amazon.com/s3): the website’s static files and segmentation configuration file will be stored in two S3 buckets
 
