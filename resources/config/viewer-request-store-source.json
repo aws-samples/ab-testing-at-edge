@@ -1,0 +1,8 @@
+{
+    "data": [
+        {
+            "key": "config",
+            "value": "{ \"THRESHOLD\": 20, \"URI_A\": \"/index.html\", \"URI_B\": \"/index_b.html\"}"
+        }
+    ]
+}
