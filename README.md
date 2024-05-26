@@ -218,19 +218,26 @@ aws dynamodb put-item \
 ```bash
 chmod 0700 resources/ab_testing_stateful.sh
 chmod 0700 resources/ab_testing_stateless.sh
-
 ```
+
+2. Test using a stateless request
+
+```bash
+./resources/ab_testing_stateless.sh CLOUDFRONT_DOMAINE_NAME
+```
+
+The script simulates many new users. You can terminate that script by pressing Ctrl+C in the terminal window.
+
+
 2. Test using a stateful request
 
 ```bash
 ./resources/ab_testing_stateful.sh CLOUDFRONT_DOMAINE_NAME
 ```
 
-3. Test using a stateless request
+The script simulates many new users and for each one, several requests. You can terminate that script by pressing Ctrl+C in the terminal window.
 
-```bash
-./resources/ab_testing_stateless.sh CLOUDFRONT_DOMAINE_NAME
-```
+
 
 
 ## Costs
