@@ -273,3 +273,17 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
+
+## Development Container
+
+This project includes a `devcontainer.json` file to help you set up a development container using Visual Studio Code. The development container provides a consistent development environment and simplifies the setup process.
+
+### Using the Development Container
+
+1. Install Visual Studio Code: If you haven't already, download and install Visual Studio Code from [here](https://code.visualstudio.com/).
+
+2. Install the Remote - Containers extension: Open Visual Studio Code and go to the Extensions view by clicking on the square icon in the sidebar or pressing `Ctrl+Shift+X`. Search for "Remote - Containers" and install the extension.
+
+3. Open the project in a devcontainer: Open the project folder in Visual Studio Code. You should see a notification prompting you to reopen the folder in a container. Click "Reopen in Container" to start the process. If you don't see the notification, you can manually trigger it by opening the Command Palette (`Ctrl+Shift+P`) and selecting "Remote-Containers: Reopen in Container".
+
+4. Wait for the container to build: The first time you open the project in a devcontainer, it may take a few minutes to build the container image and install the necessary dependencies. Once the process is complete, you will be connected to the development container and can start working on the project.

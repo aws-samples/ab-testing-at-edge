@@ -1,0 +1,15 @@
+{
+  "name": "AB Testing at Edge DevContainer",
+  "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:0-14",
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode.vscode-typescript-tslint-plugin"
+  ],
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "postCreateCommand": "npm install",
+  "workspaceFolder": "/workspace"
+}
